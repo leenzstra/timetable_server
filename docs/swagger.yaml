@@ -1,0 +1,158 @@
+basePath: /
+definitions:
+  models.ResponseBase:
+    properties:
+      data: {}
+      message:
+        type: string
+      result:
+        type: boolean
+    type: object
+  timetable.GroupResponse:
+    properties:
+      direction:
+        type: string
+      faculty:
+        type: string
+      group_name:
+        type: string
+      id:
+        type: integer
+    type: object
+  timetable.SessionResponse:
+    properties:
+      addition:
+        type: string
+      group_id:
+        type: integer
+      id:
+        type: integer
+      table:
+        items:
+          $ref: '#/definitions/timetable.Subject'
+        type: array
+    type: object
+  timetable.Subject:
+    properties:
+      location:
+        type: string
+      subject_name:
+        type: string
+      subject_type:
+        type: string
+      teacher:
+        type: string
+      time:
+        type: string
+    type: object
+  timetable.TimetableResponse:
+    properties:
+      day:
+        type: string
+      group_id:
+        type: integer
+      id:
+        type: integer
+      table:
+        items:
+          $ref: '#/definitions/timetable.Subject'
+        type: array
+      week_num:
+        type: integer
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /timetable/groups/:
+    get:
+      consumes:
+      - application/json
+      description: Get all groups list
+      operationId: get-groups
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseBase'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/timetable.GroupResponse'
+                  type: array
+              type: object
+      summary: Get groups list
+      tags:
+      - timetable
+  /timetable/sessions/{group_name}:
+    get:
+      consumes:
+      - application/json
+      description: Get session timetable by group name
+      operationId: get-group-session
+      parameters:
+      - description: Group Name
+        in: path
+        name: group_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseBase'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/timetable.SessionResponse'
+                  type: array
+              type: object
+      summary: Get session timetable
+      tags:
+      - timetable
+  /timetable/timetables/{group_name}:
+    get:
+      consumes:
+      - application/json
+      description: Get group timetable by group name
+      operationId: get-group-timetable
+      parameters:
+      - description: Group Name
+        in: path
+        name: group_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseBase'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/timetable.TimetableResponse'
+                  type: array
+              type: object
+      summary: Get group timetable
+      tags:
+      - timetable
+swagger: "2.0"
