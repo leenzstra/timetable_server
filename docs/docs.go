@@ -25,6 +25,145 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/teachers/eval/{id}": {
+            "get": {
+                "description": "Get teacher evaluation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teachers"
+                ],
+                "summary": "Get teacher evaluation",
+                "operationId": "get-teacher-eval",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Teacher ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseBase"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/teachers.TeacherEvalResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/teachers/set_mark/": {
+            "post": {
+                "description": "Set teachers mark",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teachers"
+                ],
+                "summary": "Set teachers mark",
+                "operationId": "set-teacher-mark",
+                "parameters": [
+                    {
+                        "description": "Mark payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/teachers.TeacherMarkBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseBase"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/teachers.TeacherMarkBody"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/teachers/{filter}": {
+            "get": {
+                "description": "Get teachers list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teachers"
+                ],
+                "summary": "Get teachers list",
+                "operationId": "get-teachers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name filter",
+                        "name": "filter",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseBase"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/teachers.TeachersResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/timetable/groups/": {
             "get": {
                 "description": "Get all groups list",
@@ -112,9 +251,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/timetable/timetables/{group_name}": {
+        "/timetable/timetables/{group_name}/{timetable_type}": {
             "get": {
-                "description": "Get group timetable by group name",
+                "description": "Get group timetable by group name and type",
                 "consumes": [
                     "application/json"
                 ],
@@ -131,6 +270,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Group Name",
                         "name": "group_name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "timetable type",
+                        "name": "timetable_type",
                         "in": "path",
                         "required": true
                     }
@@ -159,6 +305,54 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/timetable/types/{group_name}": {
+            "get": {
+                "description": "Get timetable types by group name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "timetable"
+                ],
+                "summary": "Get timetable types",
+                "operationId": "get-timetable-types",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group Name",
+                        "name": "group_name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseBase"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -171,6 +365,57 @@ const docTemplate = `{
                 },
                 "result": {
                     "type": "boolean"
+                }
+            }
+        },
+        "teachers.TeacherEvalResponse": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mark": {
+                    "type": "number"
+                }
+            }
+        },
+        "teachers.TeacherMarkBody": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "mark": {
+                    "type": "integer"
+                },
+                "sid": {
+                    "type": "integer"
+                }
+            }
+        },
+        "teachers.TeachersResponse": {
+            "type": "object",
+            "properties": {
+                "department": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "string"
                 }
             }
         },
@@ -191,27 +436,7 @@ const docTemplate = `{
                 }
             }
         },
-        "timetable.SessionResponse": {
-            "type": "object",
-            "properties": {
-                "addition": {
-                    "type": "string"
-                },
-                "group_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "table": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/timetable.Subject"
-                    }
-                }
-            }
-        },
-        "timetable.Subject": {
+        "timetable.GroupSubject": {
             "type": "object",
             "properties": {
                 "location": {
@@ -227,14 +452,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "time": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
-        "timetable.TimetableResponse": {
+        "timetable.SessionResponse": {
             "type": "object",
             "properties": {
-                "day": {
+                "addition": {
                     "type": "string"
                 },
                 "group_id": {
@@ -246,7 +471,47 @@ const docTemplate = `{
                 "table": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/timetable.Subject"
+                        "$ref": "#/definitions/timetable.SessionSubject"
+                    }
+                }
+            }
+        },
+        "timetable.SessionSubject": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "subject_name": {
+                    "type": "string"
+                },
+                "subject_type": {
+                    "type": "string"
+                },
+                "teacher": {
+                    "type": "string"
+                }
+            }
+        },
+        "timetable.TimetableResponse": {
+            "type": "object",
+            "properties": {
+                "day": {
+                    "type": "integer"
+                },
+                "group_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "table": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/timetable.GroupSubject"
                     }
                 },
                 "week_num": {

@@ -1,1 +1,5 @@
 test.txt
+/parser
+Dockerfile
+docker-compose.yml
+.env

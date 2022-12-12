@@ -16,6 +16,7 @@ func RegisterRoutes(app *fiber.App, db *gorm.DB) {
 
 	routes := app.Group("/timetable")
 	routes.Get("/groups", h.GetGroups)
-	routes.Get("/timetables/:group_name", h.GetGroupTimetable)
+	routes.Get("/timetables/:group_name/:timetable_type", h.GetGroupTimetable)
 	routes.Get("/sessions/:group_name", h.GetGroupSession)
+	routes.Get("/types/:group_name", h.GetTimetableTypes)
 }

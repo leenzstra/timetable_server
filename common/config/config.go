@@ -5,13 +5,18 @@ import "github.com/spf13/viper"
 type Config struct {
 	PostgresLogin  string `mapstructure:"POSTGRES_LOGIN"`
 	PostgresPass string `mapstructure:"POSTGRES_PASS"`
+	PostgresHost string `mapstructure:"POSTGRES_HOST"`
 }
 
-func LoadConfig() (c Config, err error) {
+func LoadConfig(prod bool) (c Config, err error) {
 	viper.AddConfigPath("./common/config")
-	viper.SetConfigName("dev")
+	if prod {
+		viper.SetConfigName("prod")
+	} else {
+		viper.SetConfigName("dev")
+	}
+	
 	viper.SetConfigType("env")
-
 	viper.AutomaticEnv()
 
 	err = viper.ReadInConfig()

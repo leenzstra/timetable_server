@@ -15,11 +15,11 @@ type SessionResponse struct {
 	ID       uint       `json:"id"`
 	GroupID  uint       `json:"group_id"`
 	Addition string     `json:"addition"`
-	Table    []*Subject `json:"table"`
+	Table    []*SessionSubject `json:"table"`
 }
 
-type Subject struct {
-	Time        string `json:"time"`
+type SessionSubject struct {
+	Date        string `json:"date"`
 	SubjectName string `json:"subject_name"`
 	SubjectType string `json:"subject_type"`
 	Teacher     string `json:"teacher"`
@@ -31,19 +31,19 @@ func NewSessionResponse(g *models.Session) *SessionResponse {
 	m := make(map[string]string)
 	json.Unmarshal(bytes, &m)
 
-	subjects := make([]*Subject, 0)
+	subjects := make([]*SessionSubject, 0)
 
-	for time, v := range m {
-		subject := &Subject{}
+	for date, v := range m {
+		subject := &SessionSubject{}
 		if v != constant.EmptySubject {
 			matches := constant.SubjectPattern.FindAllStringSubmatch(v, -1)
-			subject.Time = time
+			subject.Date = date
 			subject.SubjectName = strings.Trim(matches[0][1], " ")
 			subject.SubjectType = strings.Trim(matches[0][2], " ()")
 			subject.Teacher = strings.Trim(constant.TeacherNamePattern.FindAllStringSubmatch(matches[0][3], -1)[0][0], " ")
 			subject.Location = strings.Trim(matches[0][4], " ")
 		} else {
-			subject.Time = time
+			subject.Date = date
 		}
 		subjects = append(subjects, subject)
 

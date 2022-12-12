@@ -1,7 +1,10 @@
 package models
 
 import (
+	"database/sql"
+
 	"gorm.io/datatypes"
+	// "gorm.io/gorm"
 )
 
 type Tabler interface {
@@ -9,14 +12,14 @@ type Tabler interface {
 }
 
 type Group struct {
-	ID        uint
-	Faculty   string
-	Direction string
-	GroupName string
-	GroupUrl  string
-	TableKind string
+	ID         uint
+	Faculty    string
+	Direction  string
+	GroupName  string
+	GroupUrl   string
+	TableKind  string
 	Timetables []Timetable
-	Sessions []Session
+	Sessions   []Session
 }
 
 func (g Group) TableName() string {
@@ -26,7 +29,7 @@ func (g Group) TableName() string {
 type Timetable struct {
 	ID        uint
 	GroupID   uint
-	Day       string
+	Day       uint
 	WeekNum   uint
 	TableJson datatypes.JSON
 }
@@ -44,4 +47,18 @@ type Session struct {
 
 func (s Session) TableName() string {
 	return "session"
+}
+
+type Teacher struct {
+	Id        int
+	FIO        string
+	Position   string
+	Department sql.NullString
+}
+
+type TeacherEvaluation struct {
+	Id int
+	TeacherId int
+	Mark      int
+	Comment   sql.NullString
 }

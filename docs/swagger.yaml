@@ -8,6 +8,39 @@ definitions:
       result:
         type: boolean
     type: object
+  teachers.TeacherEvalResponse:
+    properties:
+      comments:
+        items:
+          type: string
+        type: array
+      count:
+        type: integer
+      id:
+        type: integer
+      mark:
+        type: number
+    type: object
+  teachers.TeacherMarkBody:
+    properties:
+      comment:
+        type: string
+      mark:
+        type: integer
+      sid:
+        type: integer
+    type: object
+  teachers.TeachersResponse:
+    properties:
+      department:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      position:
+        type: string
+    type: object
   timetable.GroupResponse:
     properties:
       direction:
@@ -17,6 +50,19 @@ definitions:
       group_name:
         type: string
       id:
+        type: integer
+    type: object
+  timetable.GroupSubject:
+    properties:
+      location:
+        type: string
+      subject_name:
+        type: string
+      subject_type:
+        type: string
+      teacher:
+        type: string
+      time:
         type: integer
     type: object
   timetable.SessionResponse:
@@ -29,11 +75,13 @@ definitions:
         type: integer
       table:
         items:
-          $ref: '#/definitions/timetable.Subject'
+          $ref: '#/definitions/timetable.SessionSubject'
         type: array
     type: object
-  timetable.Subject:
+  timetable.SessionSubject:
     properties:
+      date:
+        type: string
       location:
         type: string
       subject_name:
@@ -42,20 +90,18 @@ definitions:
         type: string
       teacher:
         type: string
-      time:
-        type: string
     type: object
   timetable.TimetableResponse:
     properties:
       day:
-        type: string
+        type: integer
       group_id:
         type: integer
       id:
         type: integer
       table:
         items:
-          $ref: '#/definitions/timetable.Subject'
+          $ref: '#/definitions/timetable.GroupSubject'
         type: array
       week_num:
         type: integer
@@ -74,6 +120,89 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /teachers/{filter}:
+    get:
+      consumes:
+      - application/json
+      description: Get teachers list
+      operationId: get-teachers
+      parameters:
+      - description: Name filter
+        in: path
+        name: filter
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseBase'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/teachers.TeachersResponse'
+                  type: array
+              type: object
+      summary: Get teachers list
+      tags:
+      - teachers
+  /teachers/eval/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get teacher evaluation
+      operationId: get-teacher-eval
+      parameters:
+      - description: Teacher ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseBase'
+            - properties:
+                data:
+                  $ref: '#/definitions/teachers.TeacherEvalResponse'
+              type: object
+      summary: Get teacher evaluation
+      tags:
+      - teachers
+  /teachers/set_mark/:
+    post:
+      consumes:
+      - application/json
+      description: Set teachers mark
+      operationId: set-teacher-mark
+      parameters:
+      - description: Mark payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/teachers.TeacherMarkBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseBase'
+            - properties:
+                data:
+                  $ref: '#/definitions/teachers.TeacherMarkBody'
+              type: object
+      summary: Set teachers mark
+      tags:
+      - teachers
   /timetable/groups/:
     get:
       consumes:
@@ -126,16 +255,21 @@ paths:
       summary: Get session timetable
       tags:
       - timetable
-  /timetable/timetables/{group_name}:
+  /timetable/timetables/{group_name}/{timetable_type}:
     get:
       consumes:
       - application/json
-      description: Get group timetable by group name
+      description: Get group timetable by group name and type
       operationId: get-group-timetable
       parameters:
       - description: Group Name
         in: path
         name: group_name
+        required: true
+        type: string
+      - description: timetable type
+        in: path
+        name: timetable_type
         required: true
         type: string
       produces:
@@ -153,6 +287,35 @@ paths:
                   type: array
               type: object
       summary: Get group timetable
+      tags:
+      - timetable
+  /timetable/types/{group_name}:
+    get:
+      consumes:
+      - application/json
+      description: Get timetable types by group name
+      operationId: get-timetable-types
+      parameters:
+      - description: Group Name
+        in: path
+        name: group_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseBase'
+            - properties:
+                data:
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Get timetable types
       tags:
       - timetable
 swagger: "2.0"

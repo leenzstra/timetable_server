@@ -1,16 +1,19 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 
-	_ "github.com/leenzstra/timetable_server/docs"
 	"github.com/leenzstra/timetable_server/common/config"
 	"github.com/leenzstra/timetable_server/common/db"
+	_ "github.com/leenzstra/timetable_server/docs"
+	"github.com/leenzstra/timetable_server/pkg/teachers"
 	"github.com/leenzstra/timetable_server/pkg/timetable"
 )
 
@@ -30,7 +33,12 @@ import (
 // @BasePath  /
 
 func main() {
-	c, err := config.LoadConfig()
+	isProd :=flag.Bool("prod", false, "")
+	flag.Parse()
+
+	log.Printf("isProd %v", *isProd)
+
+	c, err := config.LoadConfig(*isProd)
 
 	if err != nil {
 		log.Fatalln("Failed at config", err)
@@ -39,12 +47,14 @@ func main() {
 	app := fiber.New()
 	app.Use(logger.New())
 	app.Use(recover.New())
+	app.Use(cors.New(cors.ConfigDefault))
 	// api := app.Group("/api")
 
-	db := db.Init(c.PostgresLogin, c.PostgresPass)
+	db := db.Init(c.PostgresLogin, c.PostgresPass, c.PostgresHost)
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 	timetable.RegisterRoutes(app, db)
+	teachers.RegisterRoutes(app, db)
 
 	app.Listen(":3000")
 }
