@@ -54,13 +54,61 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.ResponseBase"
+                                    "$ref": "#/definitions/responses.ResponseBase"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/teachers.TeacherEvalResponse"
+                                            "$ref": "#/definitions/responses.TeacherEvalResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/teachers/group/{group_name}": {
+            "get": {
+                "description": "Get group teachers list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teachers"
+                ],
+                "summary": "Get group teachers list",
+                "operationId": "get-group-teachers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name group_name",
+                        "name": "group_name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.ResponseBase"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/responses.TeachersResponse"
+                                            }
                                         }
                                     }
                                 }
@@ -91,7 +139,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/teachers.TeacherMarkBody"
+                            "$ref": "#/definitions/responses.TeacherMarkBody"
                         }
                     }
                 ],
@@ -101,13 +149,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.ResponseBase"
+                                    "$ref": "#/definitions/responses.ResponseBase"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/teachers.TeacherMarkBody"
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -145,7 +193,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.ResponseBase"
+                                    "$ref": "#/definitions/responses.ResponseBase"
                                 },
                                 {
                                     "type": "object",
@@ -153,7 +201,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/teachers.TeachersResponse"
+                                                "$ref": "#/definitions/responses.TeachersResponse"
                                             }
                                         }
                                     }
@@ -184,7 +232,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.ResponseBase"
+                                    "$ref": "#/definitions/responses.ResponseBase"
                                 },
                                 {
                                     "type": "object",
@@ -192,7 +240,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/timetable.GroupResponse"
+                                                "$ref": "#/definitions/responses.GroupResponse"
                                             }
                                         }
                                     }
@@ -232,7 +280,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.ResponseBase"
+                                    "$ref": "#/definitions/responses.ResponseBase"
                                 },
                                 {
                                     "type": "object",
@@ -240,7 +288,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/timetable.SessionResponse"
+                                                "$ref": "#/definitions/responses.SessionResponse"
                                             }
                                         }
                                     }
@@ -287,7 +335,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.ResponseBase"
+                                    "$ref": "#/definitions/responses.ResponseBase"
                                 },
                                 {
                                     "type": "object",
@@ -295,7 +343,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/timetable.TimetableResponse"
+                                                "$ref": "#/definitions/responses.TimetableResponse"
                                             }
                                         }
                                     }
@@ -335,7 +383,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/models.ResponseBase"
+                                    "$ref": "#/definitions/responses.ResponseBase"
                                 },
                                 {
                                     "type": "object",
@@ -356,70 +404,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.ResponseBase": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "message": {
-                    "type": "string"
-                },
-                "result": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "teachers.TeacherEvalResponse": {
-            "type": "object",
-            "properties": {
-                "comments": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "count": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "mark": {
-                    "type": "number"
-                }
-            }
-        },
-        "teachers.TeacherMarkBody": {
+        "responses.Evaluation": {
             "type": "object",
             "properties": {
                 "comment": {
                     "type": "string"
                 },
                 "mark": {
-                    "type": "integer"
-                },
-                "sid": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
-        "teachers.TeachersResponse": {
-            "type": "object",
-            "properties": {
-                "department": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "position": {
-                    "type": "string"
-                }
-            }
-        },
-        "timetable.GroupResponse": {
+        "responses.GroupResponse": {
             "type": "object",
             "properties": {
                 "direction": {
@@ -436,7 +432,7 @@ const docTemplate = `{
                 }
             }
         },
-        "timetable.GroupSubject": {
+        "responses.GroupSubject": {
             "type": "object",
             "properties": {
                 "location": {
@@ -456,7 +452,19 @@ const docTemplate = `{
                 }
             }
         },
-        "timetable.SessionResponse": {
+        "responses.ResponseBase": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "responses.SessionResponse": {
             "type": "object",
             "properties": {
                 "addition": {
@@ -471,12 +479,12 @@ const docTemplate = `{
                 "table": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/timetable.SessionSubject"
+                        "$ref": "#/definitions/responses.SessionSubject"
                     }
                 }
             }
         },
-        "timetable.SessionSubject": {
+        "responses.SessionSubject": {
             "type": "object",
             "properties": {
                 "date": {
@@ -496,7 +504,58 @@ const docTemplate = `{
                 }
             }
         },
-        "timetable.TimetableResponse": {
+        "responses.TeacherEvalResponse": {
+            "type": "object",
+            "properties": {
+                "average_mark": {
+                    "type": "number"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "evaluations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/responses.Evaluation"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.TeacherMarkBody": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "mark": {
+                    "type": "integer"
+                },
+                "sid": {
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.TeachersResponse": {
+            "type": "object",
+            "properties": {
+                "department": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.TimetableResponse": {
             "type": "object",
             "properties": {
                 "day": {
@@ -511,7 +570,7 @@ const docTemplate = `{
                 "table": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/timetable.GroupSubject"
+                        "$ref": "#/definitions/responses.GroupSubject"
                     }
                 },
                 "week_num": {

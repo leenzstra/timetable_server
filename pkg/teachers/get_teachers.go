@@ -5,25 +5,19 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/leenzstra/timetable_server/common/models"
+	"github.com/leenzstra/timetable_server/common/responses"
 	"github.com/leenzstra/timetable_server/common/utils"
 )
 
-type TeachersResponse struct {
-	Id        int            `json:"id"`
-	Name       string         `json:"name"`
-	Department string `json:"department"`
-	Position   string         `json:"position"`
-}
-
-func NewTeachersResponse(g *models.Teacher) *TeachersResponse {
+func NewTeachersResponse(g *models.Teacher) *responses.TeachersResponse {
 	var dep string
 	if !g.Department.Valid {
 		dep = ""
 	} else {
 		dep = g.Department.String
 	}
-	return &TeachersResponse{
-		Id:        g.Id,
+	return &responses.TeachersResponse{
+		Id:         g.Id,
 		Name:       g.FIO,
 		Department: dep,
 		Position:   g.Position,
@@ -38,7 +32,7 @@ func NewTeachersResponse(g *models.Teacher) *TeachersResponse {
 // @Param filter  path string false "Name filter"
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  models.ResponseBase{data=[]TeachersResponse}
+// @Success      200  {object}  responses.ResponseBase{data=[]responses.TeachersResponse}
 // @Router       /teachers/{filter} [get]
 func (h handler) GetTeachers(c *fiber.Ctx) error {
 	var g []*models.Teacher
@@ -52,12 +46,12 @@ func (h handler) GetTeachers(c *fiber.Ctx) error {
 		filter = ""
 	}
 
-	err = h.DB.Where("fio LIKE ?",filter+"%").Find(&g).Error
+	g, err = h.DB.GetTeachers(filter)
 	if err != nil {
 		return c.JSON(utils.WrapResponse(false, err.Error(), nil))
 	}
 
-	gResponses := make([]*TeachersResponse, 0)
+	gResponses := make([]*responses.TeachersResponse, 0)
 	for _, gr := range g {
 		tr := NewTeachersResponse(gr)
 		gResponses = append(gResponses, tr)

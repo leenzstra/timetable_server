@@ -3,18 +3,12 @@ package timetable
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/leenzstra/timetable_server/common/models"
+	"github.com/leenzstra/timetable_server/common/responses"
 	"github.com/leenzstra/timetable_server/common/utils"
 )
 
-type GroupResponse struct {
-	ID        uint   `json:"id"`
-	Faculty   string `json:"faculty"`
-	Direction string `json:"direction"`
-	GroupName string `json:"group_name"`
-}
-
-func NewGroupResponse(g *models.Group) *GroupResponse {
-	return &GroupResponse{
+func NewGroupResponse(g *models.Group) *responses.GroupResponse {
+	return &responses.GroupResponse{
 		ID:        g.ID,
 		Faculty:   g.Faculty,
 		Direction: g.Direction,
@@ -29,18 +23,16 @@ func NewGroupResponse(g *models.Group) *GroupResponse {
 // @Tags         timetable
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  models.ResponseBase{data=[]GroupResponse}
+// @Success      200  {object}  responses.ResponseBase{data=[]responses.GroupResponse}
 // @Router       /timetable/groups/ [get]
 func (h handler) GetGroups(c *fiber.Ctx) error {
-	var g []*models.Group
-
-	err := h.DB.Find(&g).Group("GroupName").Error
+	groups, err := h.DB.GetGroups()
 	if err != nil {
 		return c.JSON(utils.WrapResponse(false, err.Error(), nil))
 	}
 
-	gResponses := make([]*GroupResponse, 0)
-	for _, gr := range g {
+	gResponses := make([]*responses.GroupResponse, 0)
+	for _, gr := range groups {
 		tr := NewGroupResponse(gr)
 		gResponses = append(gResponses, tr)
 	}

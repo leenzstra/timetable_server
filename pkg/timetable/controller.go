@@ -2,14 +2,14 @@ package timetable
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+	"github.com/leenzstra/timetable_server/common/db"
 )
 
 type handler struct {
-	DB *gorm.DB
+	DB *db.Database
 }
 
-func RegisterRoutes(app *fiber.App, db *gorm.DB) {
+func RegisterRoutes(app *fiber.App, db *db.Database) {
 	h := &handler{
 		DB: db,
 	}

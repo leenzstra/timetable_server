@@ -1,5 +1,5 @@
 swagger:
-	swag init -d .\cmd\,.\common\models\,.\pkg\teachers\.,.\pkg\timetable\. 
+	swag init -d .\cmd\,.\common\models\,.\common\responses\,.\pkg\teachers\.,.\pkg\timetable\. 
 
 run: swagger
 	go run .\cmd\main.go  

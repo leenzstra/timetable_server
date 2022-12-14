@@ -6,6 +6,7 @@ type Config struct {
 	PostgresLogin  string `mapstructure:"POSTGRES_LOGIN"`
 	PostgresPass string `mapstructure:"POSTGRES_PASS"`
 	PostgresHost string `mapstructure:"POSTGRES_HOST"`
+	PostgresPort int `mapstructure:"POSTGRES_PORT"`
 }
 
 func LoadConfig(prod bool) (c Config, err error) {

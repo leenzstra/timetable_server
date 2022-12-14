@@ -8,33 +8,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/leenzstra/timetable_server/common/constant"
 	"github.com/leenzstra/timetable_server/common/models"
+	"github.com/leenzstra/timetable_server/common/responses"
 	"github.com/leenzstra/timetable_server/common/utils"
 )
 
-type SessionResponse struct {
-	ID       uint       `json:"id"`
-	GroupID  uint       `json:"group_id"`
-	Addition string     `json:"addition"`
-	Table    []*SessionSubject `json:"table"`
-}
 
-type SessionSubject struct {
-	Date        string `json:"date"`
-	SubjectName string `json:"subject_name"`
-	SubjectType string `json:"subject_type"`
-	Teacher     string `json:"teacher"`
-	Location    string `json:"location"`
-}
-
-func NewSessionResponse(g *models.Session) *SessionResponse {
+func NewSessionResponse(g *models.Session) *responses.SessionResponse {
 	bytes, _ := g.Exams.MarshalJSON()
 	m := make(map[string]string)
 	json.Unmarshal(bytes, &m)
 
-	subjects := make([]*SessionSubject, 0)
+	subjects := make([]*responses.SessionSubject, 0)
 
 	for date, v := range m {
-		subject := &SessionSubject{}
+		subject := &responses.SessionSubject{}
 		if v != constant.EmptySubject {
 			matches := constant.SubjectPattern.FindAllStringSubmatch(v, -1)
 			subject.Date = date
@@ -48,7 +35,7 @@ func NewSessionResponse(g *models.Session) *SessionResponse {
 		subjects = append(subjects, subject)
 
 	}
-	return &SessionResponse{
+	return &responses.SessionResponse{
 		ID:      g.ID,
 		GroupID: g.GroupID,
 		Table:   subjects,
@@ -63,32 +50,25 @@ func NewSessionResponse(g *models.Session) *SessionResponse {
 // @Tags         timetable
 // @Accept       json
 // @Produce      json
-// @Success      200  {object} models.ResponseBase{data=[]SessionResponse}
+// @Success      200  {object} responses.ResponseBase{data=[]responses.SessionResponse}
 // @Router       /timetable/sessions/{group_name} [get]
 func (h handler) GetGroupSession(c *fiber.Ctx) error {
-	var g []*models.Session
-	var u *models.Group
-
 	groupName, err := url.QueryUnescape(c.Params("group_name"))
 	if err != nil {
 		return c.JSON(utils.WrapResponse(false, err.Error(), nil))
 	}
 
-	err = h.DB.Where(&models.Group{GroupName: groupName}).First(&u).Error
+	// group, err := h.DB.GetGroupByName(groupName)
+	// if err != nil {
+	// 	return c.JSON(utils.WrapResponse(false, err.Error(), nil))
+	// }
+
+	session, err := h.DB.GetGroupSession(groupName)
 	if err != nil {
 		return c.JSON(utils.WrapResponse(false, err.Error(), nil))
 	}
 
-	err = h.DB.Model(&models.Group{ID: u.ID}).Association("Sessions").Find(&g)
-	if err != nil {
-		return c.JSON(utils.WrapResponse(false, err.Error(), nil))
-	}
+	response := NewSessionResponse(session)
 
-	sResponses := make([]*SessionResponse, 0)
-	for _, s := range g {
-		sr := NewSessionResponse(s)
-		sResponses = append(sResponses, sr)
-	}
-
-	return c.JSON(utils.WrapResponse(true, "", sResponses))
+	return c.JSON(utils.WrapResponse(true, "", response))
 }

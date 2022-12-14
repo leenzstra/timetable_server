@@ -1,16 +1,20 @@
 package utils
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/leenzstra/timetable_server/common/constant"
 	"github.com/leenzstra/timetable_server/common/models"
+	"github.com/leenzstra/timetable_server/common/responses"
 )
 
-func WrapResponse(result bool, message string, data interface{}) *models.ResponseBase {
-	return &models.ResponseBase{
+func WrapResponse(result bool, message string, data interface{}) *responses.ResponseBase {
+	return &responses.ResponseBase{
 		Result:  result,
 		Message: message,
 		Data:    data,
@@ -36,5 +40,49 @@ func StringTimeToUnix(timeString string) (uint, error) {
 	unixTime := hours*int(time.Hour.Seconds()) + mins*int(time.Minute.Seconds())
 
 	return uint(unixTime), nil
-
 }
+
+func FetchSubjectInfo(rawSubject string) (*responses.GroupSubject, error) {
+	subject := &responses.GroupSubject{}
+	if rawSubject != constant.EmptySubject {
+		matches := constant.SubjectPattern.FindAllStringSubmatch(rawSubject, -1)
+
+		if len(matches) == 0 {
+			return subject, errors.New("no subject info found")
+		}
+		if len(matches[0]) < 4 {
+			return subject, errors.New("no exact subject info found")
+		}
+
+		subject.SubjectName = strings.Trim(matches[0][1], " ")
+		subject.SubjectType = strings.Trim(matches[0][2], " ()")
+		subject.Teacher = strings.Trim(constant.TeacherNamePattern.FindAllStringSubmatch(matches[0][3], -1)[0][0], " ")
+		subject.Location = strings.Trim(matches[0][4], " ")
+	}
+	return subject, nil
+}
+
+ func FetchGroupSubjectsFromTimetable(timetable models.Timetable) ([]*responses.GroupSubject, error) {
+	bytes, err := timetable.TableJson.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData := make(map[string]string)
+	err = json.Unmarshal(bytes, &jsonData)
+	if err != nil {
+		return nil, err
+	}
+
+	subjects := make([]*responses.GroupSubject, 0)
+
+	for time, rawSubject := range jsonData {
+		timeUnix, _ := StringTimeToUnix(time)
+		subject, _ := FetchSubjectInfo(rawSubject)
+		subject.Time = timeUnix
+
+		subjects = append(subjects, subject)
+	}
+
+	return subjects, nil
+ }

@@ -1,47 +1,13 @@
 basePath: /
 definitions:
-  models.ResponseBase:
-    properties:
-      data: {}
-      message:
-        type: string
-      result:
-        type: boolean
-    type: object
-  teachers.TeacherEvalResponse:
-    properties:
-      comments:
-        items:
-          type: string
-        type: array
-      count:
-        type: integer
-      id:
-        type: integer
-      mark:
-        type: number
-    type: object
-  teachers.TeacherMarkBody:
+  responses.Evaluation:
     properties:
       comment:
         type: string
       mark:
-        type: integer
-      sid:
-        type: integer
+        type: number
     type: object
-  teachers.TeachersResponse:
-    properties:
-      department:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      position:
-        type: string
-    type: object
-  timetable.GroupResponse:
+  responses.GroupResponse:
     properties:
       direction:
         type: string
@@ -52,7 +18,7 @@ definitions:
       id:
         type: integer
     type: object
-  timetable.GroupSubject:
+  responses.GroupSubject:
     properties:
       location:
         type: string
@@ -65,7 +31,15 @@ definitions:
       time:
         type: integer
     type: object
-  timetable.SessionResponse:
+  responses.ResponseBase:
+    properties:
+      data: {}
+      message:
+        type: string
+      result:
+        type: boolean
+    type: object
+  responses.SessionResponse:
     properties:
       addition:
         type: string
@@ -75,10 +49,10 @@ definitions:
         type: integer
       table:
         items:
-          $ref: '#/definitions/timetable.SessionSubject'
+          $ref: '#/definitions/responses.SessionSubject'
         type: array
     type: object
-  timetable.SessionSubject:
+  responses.SessionSubject:
     properties:
       date:
         type: string
@@ -91,7 +65,40 @@ definitions:
       teacher:
         type: string
     type: object
-  timetable.TimetableResponse:
+  responses.TeacherEvalResponse:
+    properties:
+      average_mark:
+        type: number
+      count:
+        type: integer
+      evaluations:
+        items:
+          $ref: '#/definitions/responses.Evaluation'
+        type: array
+      id:
+        type: integer
+    type: object
+  responses.TeacherMarkBody:
+    properties:
+      comment:
+        type: string
+      mark:
+        type: integer
+      sid:
+        type: integer
+    type: object
+  responses.TeachersResponse:
+    properties:
+      department:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      position:
+        type: string
+    type: object
+  responses.TimetableResponse:
     properties:
       day:
         type: integer
@@ -101,7 +108,7 @@ definitions:
         type: integer
       table:
         items:
-          $ref: '#/definitions/timetable.GroupSubject'
+          $ref: '#/definitions/responses.GroupSubject'
         type: array
       week_num:
         type: integer
@@ -138,11 +145,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/models.ResponseBase'
+            - $ref: '#/definitions/responses.ResponseBase'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/teachers.TeachersResponse'
+                    $ref: '#/definitions/responses.TeachersResponse'
                   type: array
               type: object
       summary: Get teachers list
@@ -167,12 +174,41 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/models.ResponseBase'
+            - $ref: '#/definitions/responses.ResponseBase'
             - properties:
                 data:
-                  $ref: '#/definitions/teachers.TeacherEvalResponse'
+                  $ref: '#/definitions/responses.TeacherEvalResponse'
               type: object
       summary: Get teacher evaluation
+      tags:
+      - teachers
+  /teachers/group/{group_name}:
+    get:
+      consumes:
+      - application/json
+      description: Get group teachers list
+      operationId: get-group-teachers
+      parameters:
+      - description: Name group_name
+        in: path
+        name: group_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.ResponseBase'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/responses.TeachersResponse'
+                  type: array
+              type: object
+      summary: Get group teachers list
       tags:
       - teachers
   /teachers/set_mark/:
@@ -187,7 +223,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/teachers.TeacherMarkBody'
+          $ref: '#/definitions/responses.TeacherMarkBody'
       produces:
       - application/json
       responses:
@@ -195,10 +231,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/models.ResponseBase'
+            - $ref: '#/definitions/responses.ResponseBase'
             - properties:
                 data:
-                  $ref: '#/definitions/teachers.TeacherMarkBody'
+                  type: string
               type: object
       summary: Set teachers mark
       tags:
@@ -216,11 +252,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/models.ResponseBase'
+            - $ref: '#/definitions/responses.ResponseBase'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/timetable.GroupResponse'
+                    $ref: '#/definitions/responses.GroupResponse'
                   type: array
               type: object
       summary: Get groups list
@@ -245,11 +281,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/models.ResponseBase'
+            - $ref: '#/definitions/responses.ResponseBase'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/timetable.SessionResponse'
+                    $ref: '#/definitions/responses.SessionResponse'
                   type: array
               type: object
       summary: Get session timetable
@@ -279,11 +315,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/models.ResponseBase'
+            - $ref: '#/definitions/responses.ResponseBase'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/timetable.TimetableResponse'
+                    $ref: '#/definitions/responses.TimetableResponse'
                   type: array
               type: object
       summary: Get group timetable
@@ -308,7 +344,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/models.ResponseBase'
+            - $ref: '#/definitions/responses.ResponseBase'
             - properties:
                 data:
                   items:

@@ -1,2 +1,2 @@
 # timetable_server
-a)
+PNRPU timetable app backend
