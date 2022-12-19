@@ -93,6 +93,8 @@ definitions:
         type: string
       id:
         type: integer
+      image_url:
+        type: string
       name:
         type: string
       position:
@@ -112,6 +114,13 @@ definitions:
         type: array
       week_num:
         type: integer
+    type: object
+  responses.TimetableTypeResponse:
+    properties:
+      name:
+        type: string
+      presentation:
+        type: string
     type: object
 host: localhost:3000
 info:
@@ -348,7 +357,7 @@ paths:
             - properties:
                 data:
                   items:
-                    type: string
+                    $ref: '#/definitions/responses.TimetableTypeResponse'
                   type: array
               type: object
       summary: Get timetable types

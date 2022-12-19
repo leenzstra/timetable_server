@@ -9,7 +9,7 @@ type ResponseBase struct {
 type TimetableResponse struct {
 	ID      uint            `json:"id"`
 	GroupID uint            `json:"group_id"`
-	Day     uint          `json:"day"`
+	Day     uint            `json:"day"`
 	WeekNum uint            `json:"week_num"`
 	Table   []*GroupSubject `json:"table"`
 }
@@ -39,6 +39,7 @@ type TeachersResponse struct {
 	Name       string `json:"name"`
 	Department string `json:"department"`
 	Position   string `json:"position"`
+	ImageUrl   string `json:"image_url"`
 }
 
 type GroupResponse struct {
@@ -49,9 +50,9 @@ type GroupResponse struct {
 }
 
 type SessionResponse struct {
-	ID       uint       `json:"id"`
-	GroupID  uint       `json:"group_id"`
-	Addition string     `json:"addition"`
+	ID       uint              `json:"id"`
+	GroupID  uint              `json:"group_id"`
+	Addition string            `json:"addition"`
 	Table    []*SessionSubject `json:"table"`
 }
 
@@ -69,3 +70,7 @@ type TeacherMarkBody struct {
 	Comment string `json:"comment"`
 }
 
+type TimetableTypeResponse struct {
+	Name         string `json:"name"`
+	Presentation string `json:"presentation"`
+}

@@ -86,3 +86,13 @@ func FetchSubjectInfo(rawSubject string) (*responses.GroupSubject, error) {
 
 	return subjects, nil
  }
+
+ func StringBetween(str, left, right, def string) string {
+	start := strings.Index(str, left)
+	end := strings.Index(str, right)
+	if start != -1 && end != -1 {
+		return str[start+1:end]
+	} else {
+		return def
+	}
+ }

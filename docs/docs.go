@@ -391,7 +391,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "type": "string"
+                                                "$ref": "#/definitions/responses.TimetableTypeResponse"
                                             }
                                         }
                                     }
@@ -547,6 +547,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "image_url": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -575,6 +578,17 @@ const docTemplate = `{
                 },
                 "week_num": {
                     "type": "integer"
+                }
+            }
+        },
+        "responses.TimetableTypeResponse": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "presentation": {
+                    "type": "string"
                 }
             }
         }

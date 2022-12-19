@@ -21,6 +21,7 @@ func NewTeachersResponse(g *models.Teacher) *responses.TeachersResponse {
 		Name:       g.FIO,
 		Department: dep,
 		Position:   g.Position,
+		ImageUrl: g.ImageUrl,
 	}
 }
 

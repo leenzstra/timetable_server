@@ -50,14 +50,15 @@ func (s Session) TableName() string {
 }
 
 type Teacher struct {
-	Id        int
+	Id         int
 	FIO        string
 	Position   string
 	Department sql.NullString
+	ImageUrl   string
 }
 
 type TeacherEvaluation struct {
-	Id int
+	Id        int
 	TeacherId int
 	Mark      int
 	Comment   sql.NullString
