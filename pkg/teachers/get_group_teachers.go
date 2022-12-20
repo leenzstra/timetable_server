@@ -61,6 +61,15 @@ func selectTeachersFromGroup(teachers []*models.Teacher, names []string) []*mode
 	return results
 }
 
+func selectType(groups []*models.Group) string {
+	for i := len(groups)-1; i >= 0; i-- {
+		if !strings.Contains(groups[i].TableKind, "сессия") {
+			return groups[i].TableKind;
+		}
+	}
+	return ""
+}
+
 // GetGroupTeachers godoc
 // @Summary      Get group teachers list
 // @Description  Get group teachers list
@@ -91,7 +100,9 @@ func (h handler) GetGroupTeachers(c *fiber.Ctx) error {
 		return c.JSON(utils.WrapResponse(false, "Timetable types not found", nil))
 	}
 
-	groupTimetable, err := h.DB.GetGroupTimetable(groupName, groupTimetableTypes[len(groupTimetableTypes)-1].TableKind)
+	tableType := selectType(groupTimetableTypes);
+
+	groupTimetable, err := h.DB.GetGroupTimetable(groupName, tableType)
 	if err != nil {
 		return c.JSON(utils.WrapResponse(false, err.Error(), nil))
 	}
