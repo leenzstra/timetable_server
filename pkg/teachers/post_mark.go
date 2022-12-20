@@ -1,7 +1,7 @@
 package teachers
 
 import (
-	"errors"
+
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/leenzstra/timetable_server/common/responses"
@@ -28,8 +28,8 @@ func (h handler) SetMark(c *fiber.Ctx) error {
 		return c.JSON(utils.WrapResponse(false, err.Error(), nil))
 	}
 
-	if payload.Mark < MinMark && payload.Mark > MaxMark {
-		return errors.New("mark < minMark or mark > maxMark")
+	if payload.Mark < MinMark || payload.Mark > MaxMark {
+		return c.JSON(utils.WrapResponse(false, "mark < minMark or mark > maxMark", nil)) 
 	}
 
 	teacher, err := h.DB.GetTeacherById(payload.SID)
